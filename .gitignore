@@ -1,0 +1,25 @@
+# Xcode / iOS
+**/DerivedData/
+**/build/
+**/*.xcarchive
+**/*.ipa
+**/*.dSYM.zip
+**/build.keychain
+**/Pods/
+!jsb-link/frameworks/runtime-src/proj.ios_mac/Podfile
+!jsb-link/frameworks/runtime-src/proj.ios_mac/Podfile.lock
+
+# Secrets - never commit
+*.p12
+*.mobileprovision
+*.cer
+ExportOptions.local.plist
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Cocos build artifacts (large)
+jsb-link/simulator/
+jsb-link/publish/

@@ -1,0 +1,64 @@
+PODS:
+  - BigoADS (5.0.0)
+  - ChartboostMediationAdapterChartboost (4.9.8.0.1):
+    - ChartboostMediationSDK (~> 4.0)
+    - ChartboostSDK (~> 9.8.0)
+  - ChartboostMediationSDK (4.9.0.1)
+  - ChartboostSDK (9.8.1)
+  - Fyber_Marketplace_SDK (8.4.1)
+  - TPNBigoSDKAdapter (6.4.93.1):
+    - BigoADS (= 5.0.0)
+    - TPNiOS (= 6.4.93)
+  - TPNChartboostSDKAdapter (6.4.93):
+    - ChartboostMediationAdapterChartboost (= 4.9.8.0.1)
+    - ChartboostMediationSDK (= 4.9.0.1)
+    - ChartboostSDK (= 9.8.1)
+    - TPNiOS (= 6.4.93)
+  - TPNFyberSDKAdapter (6.4.93.1):
+    - Fyber_Marketplace_SDK (= 8.4.1)
+    - TPNiOS (= 6.4.93)
+  - TPNiOS (6.4.93):
+    - TPNiOS/TPNSDK (= 6.4.93)
+  - TPNiOS/TPNSDK (6.4.93)
+  - TPNVungleSDKAdapter (6.4.93):
+    - TPNiOS (= 6.4.93)
+    - VungleAds (= 7.5.3)
+  - VungleAds (7.5.3)
+
+DEPENDENCIES:
+  - TPNBigoSDKAdapter (~> 6.4.50)
+  - TPNChartboostSDKAdapter (~> 6.4.50)
+  - TPNFyberSDKAdapter (~> 6.4.50)
+  - TPNiOS (~> 6.4.50)
+  - TPNVungleSDKAdapter (~> 6.4.50)
+
+SPEC REPOS:
+  trunk:
+    - BigoADS
+    - ChartboostMediationAdapterChartboost
+    - ChartboostMediationSDK
+    - ChartboostSDK
+    - Fyber_Marketplace_SDK
+    - TPNBigoSDKAdapter
+    - TPNChartboostSDKAdapter
+    - TPNFyberSDKAdapter
+    - TPNiOS
+    - TPNVungleSDKAdapter
+    - VungleAds
+
+SPEC CHECKSUMS:
+  BigoADS: 789ca51394adb1adb405e7e01ec8e43d3dc14f15
+  ChartboostMediationAdapterChartboost: 35f88bacf5669be31a354ccfac29e66f95258ec4
+  ChartboostMediationSDK: e0976ce3765d6734b96b55cec00c653a38159f9d
+  ChartboostSDK: 5d387aeccf2748cd71c0b033e6c2cad4a558b308
+  Fyber_Marketplace_SDK: c908580dc3d65e67f2862df137f8ae7dad6e3321
+  TPNBigoSDKAdapter: ed618310d108cd775425194743919fd6ba002391
+  TPNChartboostSDKAdapter: 9b5e40753670c64483a81b554525985dfe4b20d0
+  TPNFyberSDKAdapter: 8345d28029982ec4c845e0f7cf0df6d14f4bdcfa
+  TPNiOS: 59234b839faeac2cd8b8dba8377301512319656f
+  TPNVungleSDKAdapter: 89ac6e8d8ef77f1650af22d8781c549fb3bcc3c9
+  VungleAds: 3b273eba0219680dbef90d51e690d165422702d9
+
+PODFILE CHECKSUM: 028ab2512c17f27838b5471d24dad59b5482ecc3
+
+COCOAPODS: 1.16.2
