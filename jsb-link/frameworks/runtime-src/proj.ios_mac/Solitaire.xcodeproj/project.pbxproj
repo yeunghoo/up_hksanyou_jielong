@@ -570,6 +570,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				COMPRESS_PNG_FILES = NO;
+				CURRENT_PROJECT_VERSION = 1.3.5;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = ZQ83BTV27F;
 				ENABLE_BITCODE = NO;
@@ -595,8 +596,10 @@
 					"../../../../cocos2d-x/external/ios/libs",
 					"$(PROJECT_DIR)",
 				);
+				MARKETING_VERSION = 1.3.5;
 				OTHER_LDFLAGS = (
 					"-ObjC",
+					"-lwebp",
 					"$(inherited)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = solitaire.puzzle.barain.hongkongsanyou;
@@ -629,6 +632,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				COMPRESS_PNG_FILES = NO;
+				CURRENT_PROJECT_VERSION = 1.3.5;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = ZQ83BTV27F;
 				ENABLE_BITCODE = NO;
@@ -653,8 +657,10 @@
 					"../../../../cocos2d-x/external/ios/libs",
 					"$(PROJECT_DIR)",
 				);
+				MARKETING_VERSION = 1.3.5;
 				OTHER_LDFLAGS = (
 					"-ObjC",
+					"-lwebp",
 					"$(inherited)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = solitaire.puzzle.barain.hongkongsanyou;
