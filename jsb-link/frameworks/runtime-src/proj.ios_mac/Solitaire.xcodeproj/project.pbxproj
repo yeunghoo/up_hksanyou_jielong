@@ -600,6 +600,7 @@
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lwebp",
+					"-Wl,-ld_classic",
 					"$(inherited)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = solitaire.puzzle.barain.hongkongsanyou;
@@ -661,6 +662,7 @@
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lwebp",
+					"-Wl,-ld_classic",
 					"$(inherited)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = solitaire.puzzle.barain.hongkongsanyou;
