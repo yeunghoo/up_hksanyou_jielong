@@ -31,12 +31,15 @@ jobs:
       - name: Set build number
         id: version
         run: |
+          MARKETING="${{ inputs.version }}"
           BUILD="${{ inputs.build_number }}"
           if [ -z "$BUILD" ]; then
-            BUILD="${{ inputs.version }}"
+            BUILD="${MARKETING}.${GITHUB_RUN_NUMBER}"
           fi
-          echo "marketing=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          echo "marketing=$MARKETING" >> "$GITHUB_OUTPUT"
           echo "build=$BUILD" >> "$GITHUB_OUTPUT"
+          echo "Marketing version: $MARKETING"
+          echo "Build number: $BUILD"
 
       - name: Update Info.plist version
         working-directory: ${{ env.PROJECT_DIR }}
