@@ -50,6 +50,22 @@ jobs:
           echo "Version: $(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$PLIST")"
           echo "Build:   $(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$PLIST")"
 
+      - name: Repack legacy iOS static libraries for Xcode 26
+        run: |
+          set -euo pipefail
+          LIB_DIR="cocos2d-x/external/ios/libs"
+          for lib in "$LIB_DIR"/*.a; do
+            echo "Repacking $(basename "$lib")..."
+            tmpdir=$(mktemp -d)
+            (
+              cd "$tmpdir"
+              ar x "$lib"
+              libtool -static -o "$lib.new" ./*.o
+            )
+            mv "$lib.new" "$lib"
+            rm -rf "$tmpdir"
+          done
+
       - name: Install CocoaPods dependencies
         working-directory: ${{ env.PROJECT_DIR }}
         run: pod install
