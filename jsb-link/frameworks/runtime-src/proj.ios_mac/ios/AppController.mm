@@ -45,6 +45,7 @@ static NSString * const kTopOnAppKey = @"aa7e2ff44a47599d3aad158f8fc33b6e5";
 static NSString * const kTopOnBannerPlacementID = @"n6a964aa9d91b8";
 static NSString * const kTopOnInterstitialPlacementID = @"n6a964ab77e1f9";
 static NSString * const kTopOnRewardedPlacementID = @"n6a964ace36698";
+static NSString * const kTopOnAdScene = @"1";
 
 static NSString * const kAdwareMgr = @"68ac62d4ec2b5b6f8827e270";
 static NSString * const kTrioColorScoop = @"App Store";
@@ -83,6 +84,30 @@ static NSString * const kAdLogTag = @"[广告]";
 }
 
 #pragma mark - TopOn SDK
+
+- (UIViewController *)adHostViewController {
+    UIViewController *root = self.window.rootViewController ?: self.viewController;
+    UIViewController *top = root;
+    while (top.presentedViewController) {
+        top = top.presentedViewController;
+    }
+    if (top.view.window == nil && self.window.rootViewController != nil) {
+        top = self.window.rootViewController;
+    }
+    NSLog(@"%@ 展示用 Controller=%@ window=%@ 主线程=%@", kAdLogTag,
+          NSStringFromClass([top class]),
+          top.view.window != nil ? @"YES" : @"NO",
+          [NSThread isMainThread] ? @"YES" : @"NO");
+    return top;
+}
+
+- (void)runOnMainThread:(void (^)(void))block {
+    if ([NSThread isMainThread]) {
+        block();
+    } else {
+        dispatch_async(dispatch_get_main_queue(), block);
+    }
+}
 
 - (void)initTopOnSDK {
     if (self.topOnSDKInitialized) {
@@ -186,10 +211,18 @@ static NSString * const kAdLogTag = @"[广告]";
     }
 
     NSLog(@"%@ 开始加载激励视频，广告位=%@", kAdLogTag, kTopOnRewardedPlacementID);
-    [[ATAdManager sharedManager] loadADWithPlacementID:kTopOnRewardedPlacementID extra:@{} delegate:self];
+    NSString *userId = [[[UIDevice currentDevice] identifierForVendor] UUIDString] ?: @"solitaire_user";
+    NSDictionary *extra = @{
+        kATAdLoadingExtraUserIDKey: userId
+    };
+    [[ATAdManager sharedManager] loadADWithPlacementID:kTopOnRewardedPlacementID extra:extra delegate:self];
 }
 
 - (void)showTopOnBannerAd {
+    if (![NSThread isMainThread]) {
+        [self runOnMainThread:^{ [self showTopOnBannerAd]; }];
+        return;
+    }
     NSLog(@"%@ JS 请求展示横幅广告", kAdLogTag);
     if (!self.topOnSDKInitialized) {
         self.pendingShowBanner = YES;
@@ -197,7 +230,7 @@ static NSString * const kAdLogTag = @"[广告]";
         return;
     }
 
-    [[ATAdManager sharedManager] entryBannerScenarioWithPlacementID:kTopOnBannerPlacementID scene:@""];
+    [[ATAdManager sharedManager] entryBannerScenarioWithPlacementID:kTopOnBannerPlacementID scene:kTopOnAdScene];
 
     if (![[ATAdManager sharedManager] bannerAdReadyForPlacementID:kTopOnBannerPlacementID]) {
         self.pendingShowBanner = YES;
@@ -222,7 +255,7 @@ static NSString * const kAdLogTag = @"[广告]";
         self.topOnBannerView = bannerView;
         bannerView.translatesAutoresizingMaskIntoConstraints = NO;
         bannerView.delegate = self;
-        bannerView.presentingViewController = self.viewController;
+        bannerView.presentingViewController = [self adHostViewController];
         [self.topOnBannerContainer addSubview:bannerView];
         [NSLayoutConstraint activateConstraints:@[
             [bannerView.topAnchor constraintEqualToAnchor:self.topOnBannerContainer.topAnchor],
@@ -233,10 +266,15 @@ static NSString * const kAdLogTag = @"[广告]";
     }
 
     self.topOnBannerContainer.hidden = NO;
+    [self.viewController.view bringSubviewToFront:self.topOnBannerContainer];
     NSLog(@"%@ 横幅广告已展示", kAdLogTag);
 }
 
 - (void)hideTopOnBannerAd {
+    if (![NSThread isMainThread]) {
+        [self runOnMainThread:^{ [self hideTopOnBannerAd]; }];
+        return;
+    }
     NSLog(@"%@ JS 请求隐藏横幅广告", kAdLogTag);
     self.pendingShowBanner = NO;
     self.topOnBannerContainer.hidden = YES;
@@ -244,6 +282,10 @@ static NSString * const kAdLogTag = @"[广告]";
 }
 
 - (void)showTopOnInterstitialAd {
+    if (![NSThread isMainThread]) {
+        [self runOnMainThread:^{ [self showTopOnInterstitialAd]; }];
+        return;
+    }
     NSLog(@"%@ JS 请求展示插页广告", kAdLogTag);
     if (!self.topOnSDKInitialized) {
         self.pendingShowInterstitial = YES;
@@ -251,7 +293,7 @@ static NSString * const kAdLogTag = @"[广告]";
         return;
     }
 
-    [[ATAdManager sharedManager] entryInterstitialScenarioWithPlacementID:kTopOnInterstitialPlacementID scene:@""];
+    [[ATAdManager sharedManager] entryInterstitialScenarioWithPlacementID:kTopOnInterstitialPlacementID scene:kTopOnAdScene];
 
     if (![[ATAdManager sharedManager] interstitialReadyForPlacementID:kTopOnInterstitialPlacementID]) {
         self.pendingShowInterstitial = YES;
@@ -262,22 +304,35 @@ static NSString * const kAdLogTag = @"[广告]";
 
     self.pendingShowInterstitial = NO;
 
-    NSLog(@"%@ 插页已准备好，开始展示（由 TopOn 聚合 Vungle/CB/DT/Bigo）", kAdLogTag);
-    ATShowConfig *config = [[ATShowConfig alloc] initWithScene:@"" showCustomExt:@""];
+    UIViewController *host = [self adHostViewController];
+    if (host == nil || host.view.window == nil) {
+        NSLog(@"%@ 插页无法展示：Controller 未接入窗口，host=%@", kAdLogTag, host);
+        self.pendingShowInterstitial = YES;
+        return;
+    }
+
+    NSLog(@"%@ 插页已准备好，开始展示，host=%@", kAdLogTag, NSStringFromClass([host class]));
+    ATShowConfig *config = [[ATShowConfig alloc] initWithScene:kTopOnAdScene showCustomExt:@""];
     [[ATAdManager sharedManager] showInterstitialWithPlacementID:kTopOnInterstitialPlacementID
                                                       showConfig:config
-                                                inViewController:self.viewController
+                                                inViewController:host
                                                         delegate:self
                                               nativeMixViewBlock:nil];
 }
 
 - (void)showTopOnRewardedAd {
+    if (![NSThread isMainThread]) {
+        [self runOnMainThread:^{ [self showTopOnRewardedAd]; }];
+        return;
+    }
     NSLog(@"%@ JS 请求展示激励视频", kAdLogTag);
     if (!self.topOnSDKInitialized) {
         self.pendingShowRewarded = YES;
         NSLog(@"%@ 激励视频展示已加入等待队列（SDK 尚未初始化）", kAdLogTag);
         return;
     }
+
+    [[ATAdManager sharedManager] entryRewardedVideoScenarioWithPlacementID:kTopOnRewardedPlacementID scene:kTopOnAdScene];
 
     if (![[ATAdManager sharedManager] rewardedVideoReadyForPlacementID:kTopOnRewardedPlacementID]) {
         self.pendingShowRewarded = YES;
@@ -286,14 +341,22 @@ static NSString * const kAdLogTag = @"[广告]";
         return;
     }
 
+    UIViewController *host = [self adHostViewController];
+    if (host == nil || host.view.window == nil) {
+        NSLog(@"%@ 激励视频无法展示：Controller 未接入窗口，host=%@", kAdLogTag, host);
+        self.pendingShowRewarded = YES;
+        return;
+    }
+
     self.pendingShowRewarded = NO;
 
-    NSLog(@"%@ 激励视频已准备好，开始播放", kAdLogTag);
+    NSLog(@"%@ 激励视频已准备好，开始播放，host=%@ isViewLoaded=%@",
+          kAdLogTag, NSStringFromClass([host class]), host.isViewLoaded ? @"YES" : @"NO");
     self.topOnRewardEarned = NO;
-    ATShowConfig *config = [[ATShowConfig alloc] initWithScene:@"" showCustomExt:@""];
+    ATShowConfig *config = [[ATShowConfig alloc] initWithScene:kTopOnAdScene showCustomExt:@""];
     [[ATAdManager sharedManager] showRewardedVideoWithPlacementID:kTopOnRewardedPlacementID
                                                        showConfig:config
-                                                 inViewController:self.viewController
+                                                 inViewController:host
                                                          delegate:self];
 }
 
@@ -312,26 +375,30 @@ static NSString * const kAdLogTag = @"[广告]";
 #pragma mark - ATAdLoadingDelegate
 
 - (void)didFinishLoadingADWithPlacementID:(NSString *)placementID {
-    NSLog(@"%@ %@广告加载成功，广告位=%@", kAdLogTag, [self adTypeNameForPlacementID:placementID], placementID);
-    if ([placementID isEqualToString:kTopOnBannerPlacementID] && (self.pendingShowBanner || !self.topOnBannerContainer.hidden)) {
-        NSLog(@"%@ 横幅加载完成，自动执行展示", kAdLogTag);
-        [self showTopOnBannerAd];
-    } else if ([placementID isEqualToString:kTopOnInterstitialPlacementID] && self.pendingShowInterstitial) {
-        NSLog(@"%@ 插页加载完成，自动执行等待中的展示", kAdLogTag);
-        [self showTopOnInterstitialAd];
-    } else if ([placementID isEqualToString:kTopOnRewardedPlacementID] && self.pendingShowRewarded) {
-        NSLog(@"%@ 激励视频加载完成，自动执行等待中的展示", kAdLogTag);
-        [self showTopOnRewardedAd];
-    }
+    [self runOnMainThread:^{
+        NSLog(@"%@ %@广告加载成功，广告位=%@", kAdLogTag, [self adTypeNameForPlacementID:placementID], placementID);
+        if ([placementID isEqualToString:kTopOnBannerPlacementID] && (self.pendingShowBanner || !self.topOnBannerContainer.hidden)) {
+            NSLog(@"%@ 横幅加载完成，自动执行展示", kAdLogTag);
+            [self showTopOnBannerAd];
+        } else if ([placementID isEqualToString:kTopOnInterstitialPlacementID] && self.pendingShowInterstitial) {
+            NSLog(@"%@ 插页加载完成，自动执行等待中的展示", kAdLogTag);
+            [self showTopOnInterstitialAd];
+        } else if ([placementID isEqualToString:kTopOnRewardedPlacementID] && self.pendingShowRewarded) {
+            NSLog(@"%@ 激励视频加载完成，自动执行等待中的展示", kAdLogTag);
+            [self showTopOnRewardedAd];
+        }
+    }];
 }
 
 - (void)didFailToLoadADWithPlacementID:(NSString *)placementID error:(NSError *)error {
-    NSLog(@"%@ %@广告加载失败，广告位=%@，错误=%@", kAdLogTag, [self adTypeNameForPlacementID:placementID], placementID, error.localizedDescription);
-    if ([placementID isEqualToString:kTopOnRewardedPlacementID] && self.pendingShowRewarded) {
-        self.pendingShowRewarded = NO;
-        NSLog(@"%@ 激励视频加载失败，回调游戏失败", kAdLogTag);
-        [self notifyRewardResult:NO];
-    }
+    [self runOnMainThread:^{
+        NSLog(@"%@ %@广告加载失败，广告位=%@，错误=%@", kAdLogTag, [self adTypeNameForPlacementID:placementID], placementID, error.localizedDescription);
+        if ([placementID isEqualToString:kTopOnRewardedPlacementID] && self.pendingShowRewarded) {
+            self.pendingShowRewarded = NO;
+            NSLog(@"%@ 激励视频加载失败，回调游戏失败", kAdLogTag);
+            [self notifyRewardResult:NO];
+        }
+    }];
 }
 
 #pragma mark - ATBannerDelegate

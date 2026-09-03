@@ -6,7 +6,7 @@ on:
       release_tag:
         description: 'GitHub Release tag that contains the IPA'
         required: true
-        default: 'ipa-1.3.7'
+        default: 'ipa-1.4.0'
 
 env:
   TEAM_ID: ZQ83BTV27F

@@ -44,8 +44,26 @@ return self;
 
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView {
-    // Set EAGLView as view of RootViewController
-    self.view = (__bridge CCEAGLView *)cocos2d::Application::getInstance()->getView();
+    // Do not make CCEAGLView the controller's root view. UIKit ads (rewarded / interstitial)
+    // present on top of the controller view; OpenGL ES views swallow or hide those layers.
+    CCEAGLView *eaglView = (__bridge CCEAGLView *)cocos2d::Application::getInstance()->getView();
+    UIView *container = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    container.backgroundColor = [UIColor blackColor];
+    if (eaglView != nil) {
+        eaglView.frame = container.bounds;
+        eaglView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [container addSubview:eaglView];
+    }
+    self.view = container;
+}
+
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    for (UIView *subview in self.view.subviews) {
+        if ([subview isKindOfClass:[CCEAGLView class]]) {
+            subview.frame = self.view.bounds;
+        }
+    }
 }
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
