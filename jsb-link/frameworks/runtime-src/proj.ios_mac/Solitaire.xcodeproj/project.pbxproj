@@ -345,9 +345,9 @@
 				LastUpgradeCheck = 0500;
 				TargetAttributes = {
 					A922753C1517C094001B78AA = {
-						DevelopmentTeam = 6CYF87J986;
+						DevelopmentTeam = ZQ83BTV27F;
 						LastSwiftMigration = 1640;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -567,10 +567,12 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				COMPRESS_PNG_FILES = NO;
-				CURRENT_PROJECT_VERSION = 1.4.0;
-				DEVELOPMENT_TEAM = 6CYF87J986;
+				CURRENT_PROJECT_VERSION = 1.5.0;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = ZQ83BTV27F;
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -594,13 +596,14 @@
 					"../../../../cocos2d-x/external/ios/libs",
 					"$(PROJECT_DIR)",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = solitaire.puzzle.barain.hongkongsanyou.test;
+				PRODUCT_BUNDLE_IDENTIFIER = solitaire.puzzle.barain.hongkongsanyou;
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Solitaire2022_2027;
 				SDKROOT = iphoneos;
 				STRIP_PNG_TEXT = NO;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -627,7 +630,7 @@
 				CODE_SIGN_IDENTITY = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
 				COMPRESS_PNG_FILES = NO;
-				CURRENT_PROJECT_VERSION = 1.4.0;
+				CURRENT_PROJECT_VERSION = 1.5.0;
 				DEVELOPMENT_TEAM = ZQ83BTV27F;
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
@@ -651,7 +654,7 @@
 					"../../../../cocos2d-x/external/ios/libs",
 					"$(PROJECT_DIR)",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"$(inherited)",

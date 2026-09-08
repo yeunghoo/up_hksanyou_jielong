@@ -354,8 +354,9 @@ static NSString * const kAdLogTag = @"[广告]";
           kAdLogTag, NSStringFromClass([host class]), host.isViewLoaded ? @"YES" : @"NO");
     self.topOnRewardEarned = NO;
     ATShowConfig *config = [[ATShowConfig alloc] initWithScene:kTopOnAdScene showCustomExt:@""];
+    // TopOn rewarded API uses `config:` (interstitial uses `showConfig:`).
     [[ATAdManager sharedManager] showRewardedVideoWithPlacementID:kTopOnRewardedPlacementID
-                                                       showConfig:config
+                                                           config:config
                                                  inViewController:host
                                                          delegate:self];
 }
