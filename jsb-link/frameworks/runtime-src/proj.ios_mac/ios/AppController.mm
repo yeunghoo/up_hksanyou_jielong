@@ -359,6 +359,9 @@ static NSString * const kAdLogTag = @"[广告]";
                                                            config:config
                                                  inViewController:host
                                                          delegate:self];
+    // 展示当前条后立刻预加载下一条，利用播放时段完成填充，避免等关闭再 load。
+    NSLog(@"%@ 激励视频已发起展示，立即预加载下一条", kAdLogTag);
+    [self loadRewardedAd];
 }
 
 - (void)notifyRewardResult:(BOOL)success {
@@ -465,7 +468,7 @@ static NSString * const kAdLogTag = @"[广告]";
           kAdLogTag, rewarded ? @"YES" : @"NO", self.topOnRewardEarned ? @"YES" : @"NO");
     [self notifyRewardResult:rewarded || self.topOnRewardEarned];
     self.topOnRewardEarned = NO;
-    [self loadRewardedAd];
+    // 下一条已在 show 成功后预加载，关闭时不再重复 load。
 }
 
 - (void)rewardedVideoDidFailToPlayForPlacementID:(NSString *)placementID error:(NSError *)error extra:(NSDictionary *)extra {
